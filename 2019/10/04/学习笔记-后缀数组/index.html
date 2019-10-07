@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '6.7.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="后缀数组（SA）是处理字符串的有力工具。它较后缀自动机更易理解，较后缀树更容易实现，并且SA也完全不比它们中的任何一者逊色。">
+<meta name="keywords" content="后缀数组">
+<meta property="og:type" content="article">
+<meta property="og:title" content="学习笔记 后缀数组">
+<meta property="og:url" content="http://zhxry.github.io/2019/10/04/学习笔记-后缀数组/index.html">
+<meta property="og:site_name" content="Karnage的博客">
+<meta property="og:description" content="后缀数组（SA）是处理字符串的有力工具。它较后缀自动机更易理解，较后缀树更容易实现，并且SA也完全不比它们中的任何一者逊色。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://s2.ax1x.com/2019/10/05/urTGuQ.md.jpg">
+<meta property="og:updated_time" content="2019-10-07T07:22:23.593Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="学习笔记 后缀数组">
+<meta name="twitter:description" content="后缀数组（SA）是处理字符串的有力工具。它较后缀自动机更易理解，较后缀树更容易实现，并且SA也完全不比它们中的任何一者逊色。">
+<meta name="twitter:image" content="https://s2.ax1x.com/2019/10/05/urTGuQ.md.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="http://zhxry.github.io/2019/10/04/学习笔记-后缀数组/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>学习笔记 后缀数组 | Karnage的博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Karnage的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">Once a Red, Always a Red</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">10</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">4</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">14</span></a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://zhxry.github.io/2019/10/04/学习笔记-后缀数组/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Karnage">
+      <meta itemprop="description" content="OIer && Kop">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Karnage的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">学习笔记 后缀数组
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-04 19:03:22" itemprop="dateCreated datePublished" datetime="2019-10-04T19:03:22+08:00">2019-10-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-07 15:22:23" itemprop="dateModified" datetime="2019-10-07T15:22:23+08:00">2019-10-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法-学习笔记/" itemprop="url" rel="index"><span itemprop="name">算法&&学习笔记</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>后缀数组（SA）是处理字符串的有力工具。它较后缀自动机更易理解，较后缀树更容易实现，并且SA也完全不比它们中的任何一者逊色。</p>
+<a id="more"></a>
+
+<p>本文将介绍后缀数组的$n \log n$倍增求法以及它的性质与简单应用。</p>
+<h2 id="一些定义"><a href="#一些定义" class="headerlink" title="一些定义"></a>一些定义</h2><h4 id="子串"><a href="#子串" class="headerlink" title="子串"></a>子串</h4><p>$s[l..r](l \le r)$表示字符串$S$的$l$到$r$，即$s[l], s[l + 1]…s[r - 1], s[r]$构成的字符串。</p>
+<h4 id="后缀"><a href="#后缀" class="headerlink" title="后缀"></a>后缀</h4><p>$\text{Suffix} (i)$表示字符串$S$从第$i$个字符开始直到末尾的字符串，即$s[i, len]$这个子串。</p>
+<h4 id="字符串大小"><a href="#字符串大小" class="headerlink" title="字符串大小"></a>字符串大小</h4><p>即字符串的字典序大小。对于两个字符串$s$和$t$，从头开始依次比较每一个字符，若$s[i] = t[i]$则比较下一个字符，否则若$s[i] &lt; t[i]$则$s &lt; t$；若$s[i] &gt; t[i]$则$s &gt; t$。若其中一个字符串已经到尾了仍无结果，那么若$len(s) &lt; len(t)$则$s &lt; t$；若$len(s) &gt; len(t)$则$s &gt; t$；若$len(s) = len(t)$则$s = t$。</p>
+<h4 id="后缀数组"><a href="#后缀数组" class="headerlink" title="后缀数组"></a>后缀数组</h4><p>一维数组$SA$存储了$1 \sim n$的某个排列，保证$\forall i (1 \le i \lt n), \text{Suffix} (SA[i]) &lt; \text{Suffix} (SA[i + 1])$，即$S$的所有后缀从小到大排序后第$i$名起始位置。</p>
+<h4 id="名次数组"><a href="#名次数组" class="headerlink" title="名次数组"></a>名次数组</h4><p>一维数组$Rank$同样存储了$1 \sim n$的某个排列，它表示$\text{Suffix} (i)$的排名。$Rank$数组与$SA$数组是互逆的，即$Rank[SA[i]] = i,\ SA[Rank[i]] = i$。</p>
+<h2 id="SA-的倍增求法"><a href="#SA-的倍增求法" class="headerlink" title="$SA$的倍增求法"></a>$SA$的倍增求法</h2><h4 id="思想"><a href="#思想" class="headerlink" title="思想"></a>思想</h4><p>有一个<del>不是MLE就是TLE</del>的暴力算法，就是将所有后缀存下来，进行快排，复杂度$\mathcal {O} (n ^ 2 \log n)$</p>
+<p>这样当然不行，我们要进行优化</p>
+<p>倍增算法的核心思想是：假设我们已经求出所有后缀以前$2 ^ k$个字符排序后的结果，那么我们可以根据已求出的长为$2 ^ k$的后缀排名，求出长为$2 ^ {k + 1}$的后缀排名，在若干次这样的操作后将$SA$数组完整地求出。</p>
+<p>至于排序的过程，我们可以将长度为$2 ^ {k + 1}$的字符串拆分成一前一后两个长度均为$2 ^ k$的字符串，以前半部分为第一关键字，后半部分为第二关键字，进行基数排序。</p>
+<p>下面的图片非常形象地展示了这一过程</p>
+<p><img src="https://s2.ax1x.com/2019/10/05/urTGuQ.md.jpg" alt="img"></p>
+<h4 id="详解"><a href="#详解" class="headerlink" title="详解"></a>详解</h4><p>先展示一部分代码</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Build_SA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> Size = <span class="number">300</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) Rank[i] = str[i] - <span class="string">'0'</span> + <span class="number">1</span>, tp[i] = i;</span><br><span class="line">    Radix_Sort(Size);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> len = <span class="number">1</span>, p = <span class="number">0</span>; p &lt; n; Size = p, len &lt;&lt;= <span class="number">1</span>) &#123;</span><br><span class="line">        p = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = n - len + <span class="number">1</span>; i &lt;= n; ++i) tp[++p] = i;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) <span class="keyword">if</span> (SA[i] &gt; len) tp[++p] = SA[i] - len;</span><br><span class="line">        Radix_Sort(Size);</span><br><span class="line">        <span class="built_in">std</span>::swap(Rank, tp);</span><br><span class="line">        Rank[SA[<span class="number">1</span>]] = p = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n; ++i) Rank[SA[i]] = tp[SA[i]] == tp[SA[i - <span class="number">1</span>]] &amp;&amp; tp[SA[i] + len] == tp[SA[i - <span class="number">1</span>] + len] ? p : ++p;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在一开始，我们钦定每个后缀的$rank$值（第一关键字）为其首字符值，$tp$值（第二关键字）为其位置（规定字典序一样的先出现的排在前面），进行基数排序。$Size$为字符集（亦即排序时的数值范围）大小。此时我们已将长为$2 ^ 0 = 1$的后缀排序完毕。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> len = <span class="number">1</span>, p = <span class="number">0</span>; p &lt; n; Size = p, len &lt;&lt;= <span class="number">1</span>) &#123;</span><br></pre></td></tr></table></figure>
+
+<p>接下来我们开始倍增。$len$为其<strong>上一次</strong>排序时的长度（也就是这次的一半），$p$为不同的$SA$值的数量，当$p = n$时，所有的后缀排名都不相同，我们已经得出了$SA$数组，便可退出循环。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">p = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = n - len + <span class="number">1</span>; i &lt;= n; ++i) tp[++p] = i;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) <span class="keyword">if</span> (SA[i] &gt; len) tp[++p] = SA[i] - len;</span><br></pre></td></tr></table></figure>
+
+<p>每次循环开始时，我们要先求出$tp$数组，代表<strong>长度为$2len$的后缀中第二关键字排名为$i$的位置</strong>，在基数排序中有用到。注意，最后$len$个后缀此时已经不需拼接上后缀，因此它们的第二关键字大小为$0$，应排在最前面。而对于长度大于$len$的后缀，它们的第二关键字排名应由上一轮的$SA$数组得到，因此我们从小到大枚举，将$SA$数组中<strong>可作为第二关键字的值</strong>减去$len$（因为$SA$数组和$tp$数组存的都是位置，减去则是因为这是第二关键字）存入$tp$。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Radix_Sort(Size);</span><br></pre></td></tr></table></figure>
+
+<p>然后是基数排序，先放后面。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::swap(Rank, tp);</span><br><span class="line">Rank[SA[<span class="number">1</span>]] = p = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n; ++i) Rank[SA[i]] = tp[SA[i]] == tp[SA[i - <span class="number">1</span>]] &amp;&amp; tp[SA[i] + len] == tp[SA[i - <span class="number">1</span>] + len] ? p : ++p;</span><br></pre></td></tr></table></figure>
+
+<p>排完序后我们要由新的$SA$数组得到$Rank$数组。因此我们再次从小到大枚举，并进行比较：如果某个后缀与其前一名后缀在上一轮和这一轮的排名都一样，那我们则记他们拥有一样的$Rank$值，并以此更新$p$值。</p>
+<h4 id="基数排序"><a href="#基数排序" class="headerlink" title="基数排序"></a>基数排序</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Radix_Sort</span><span class="params">(<span class="keyword">int</span> S)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= S; ++i) tax[i] = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) tax[Rank[i]]++;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= S; ++i) tax[i] += tax[i - <span class="number">1</span>];</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = n; i &gt;= <span class="number">1</span>; --i) SA[tax[Rank[tp[i]]]--] = tp[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在前一轮我们已经对第二关键字进行了排序，并存到了$tp$数组中，现在我们只需考虑第一关键字（$Rank$）即可。回顾一下此时三个数组的意义</p>
+<ul>
+<li>$SA[i]$：长度为$2len$时排名为$i$的后缀所在位置</li>
+<li>$Rank[i]$：长度为$len$时第$i$个后缀的排名，即长度为$2len$时第$i$个后缀第一关键字的排名</li>
+<li>$tp[i]$：长度为$2len$时第二关键字排名为$i$的后缀所在位置</li>
+</ul>
+<p>我们先用一个桶（$tax$数组）统计第一关键字出现次数，并对其做前缀和，得到“第一关键字比我小”的后缀有多少个</p>
+<p>然后我们<strong>从大到小</strong>枚举第二关键字（$tp$），由$Rank[tp[i]]$定位到其第一关键字的桶中位置，此时$tax[Rank[tp[i]]]$就表示当第一关键字相同时，第二关键字更大的后缀的排名，以此更新$SA$数组的值。</p>
+<p>这是后缀数组构建中最难理解的一部分，但同时也是其精华所在。</p>
+<h4 id="SA构建部分代码"><a href="#SA构建部分代码" class="headerlink" title="SA构建部分代码"></a>SA构建部分代码</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Radix_Sort</span><span class="params">(<span class="keyword">int</span> S)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= S; ++i) tax[i] = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) tax[Rank[i]]++;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= S; ++i) tax[i] += tax[i - <span class="number">1</span>];</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = n; i &gt;= <span class="number">1</span>; --i) SA[tax[Rank[tp[i]]]--] = tp[i];</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Build_SA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> Size = <span class="number">300</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) Rank[i] = str[i] - <span class="string">'0'</span> + <span class="number">1</span>, tp[i] = i;</span><br><span class="line">	Radix_Sort(Size);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> len = <span class="number">1</span>, p = <span class="number">0</span>; p &lt; n; Size = p, len &lt;&lt;= <span class="number">1</span>) &#123;</span><br><span class="line">        p = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = n - len + <span class="number">1</span>; i &lt;= n; ++i) tp[++p] = i;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) <span class="keyword">if</span> (SA[i] &gt; len) tp[++p] = SA[i] - len;</span><br><span class="line">        Radix_Sort(Size);</span><br><span class="line">        <span class="built_in">std</span>::swap(Rank, tp);</span><br><span class="line">        Rank[SA[<span class="number">1</span>]] = p = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n; ++i) Rank[SA[i]] = tp[SA[i]] == tp[SA[i - <span class="number">1</span>]] &amp;&amp; tp[SA[i] + len] == tp[SA[i - <span class="number">1</span>] + len] ? p : ++p;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此外，必须一提的是，后缀数组的构建方法并不止倍增法这一种，SA-IS和DC3两种算法都能在$\mathcal {O} (n)$的复杂度内构建出后缀数组，但由于本人太菜不会，这里就不做更多介绍了。</p>
+<h2 id="SA-的性质"><a href="#SA-的性质" class="headerlink" title="$SA$的性质"></a>$SA$的性质</h2><p>说完了后缀数组的构建方法，我们得了解它的一些有用的性质。可以说前面的所有都在为这一部分铺垫而已，以下后缀数组的真正精髓。</p>
+<h4 id="一些定义-1"><a href="#一些定义-1" class="headerlink" title="一些定义"></a>一些定义</h4><p>$\text{lcp} (x, y)$：表示字符串$x$和字符串$y$的最长公共前缀</p>
+<p>$height$数组：定义$height[i] = len(\text{lcp} (\text{Suffix} (SA[i - 1]), \text{Suffix} (SA[i])))$，即排名相邻的后缀的最长公共前缀长度。特别地，$height[1] = 0$</p>
+<p>$H$数组：定义$H[i] = height[Rank[i]]$，即$i$号后缀与其前一名后缀的最长公共前缀长度</p>
+<p>有一个比较显然的事实：对于满足$Rank[i] &lt; Rank[j]$的$(i, j)$，有<br>$$<br>lcp(i, j) = \min ^j _ {k = i + 1} \left( height[Rank[k]] \right)<br>$$<br>感性理解一下就行了吧</p>
+<h4 id="height-数组求法"><a href="#height-数组求法" class="headerlink" title="$height$数组求法"></a>$height$数组求法</h4><p>首先给出一个定理<br>$$<br>H[i] \ge H[i - 1] - 1<br>$$<br>证明（部分引自论文）：</p>
+<p>​        首先$H[i - 1] \le 1$时显然成立</p>
+<p>​        否则，假设$\text{Suffix} (k)$是排在$\text{Suffix} (i - 1)$前一名的后缀，那么他们的$\text{lcp} $长度为$H[i -  1]$。因为$H[i - 1] &gt; 1$（<strong>这很关键</strong>），所以$\text{Suffix} (k + 1)$一定会排在$\text{Suffix} (i)$之前（由$\text{Suffix} (k)$和$\text{Suffix} (i - 1)$各自去掉首位，这对排名的相对关系不会有影响），并且我们还能发现$\text{lcp} (\text{Suffix(k + 1)},\text{Suffix(i)})$为$H[i - 1] - 1$，同样从去掉首位得来。那么为什么$H[i]$一定不小于$H[i - 1] - 1$呢？可以肯定的一点是，排在$\text{Suffix} (i)$前一名的后缀一定会比$\text{Suffix(k + 1)}$更加靠近$i$（除非$k$就是$i$的前一名），并且排名离$\text{Suffix(i)}$更近的后缀与$i$的相似度一定会更高，因此$H[i - 1] - 1$为下界，原命题得证。</p>
+<p>知道了这个定理后有什么用呢？</p>
+<p>根据$H[i] \le H[i - 1] - 1$可以发现$H$数组是<strong>近乎单调</strong>的，我们因此便可$\mathcal{O}(n)$求出$H$数组，进而求出$height$数组。</p>
+<h4 id="height构建部分代码"><a href="#height构建部分代码" class="headerlink" title="height构建部分代码"></a>height构建部分代码</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Calc_Height</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> H = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (Rank[i] == <span class="number">1</span>) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="keyword">if</span> (H &gt; <span class="number">0</span>) --H;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = SA[Rank[i] - <span class="number">1</span>]; str[i + H] == str[j + H]; ++H);</span><br><span class="line">        height[Rank[i]] = H;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="SA的应用"><a href="#SA的应用" class="headerlink" title="SA的应用"></a>SA的应用</h2><p>待补</p>
+<hr>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p>IOI2009国家集训队论文：<a href="https://wenku.baidu.com/view/ed1be61e10a6f524ccbf85fd.html" target="_blank" rel="noopener">后缀数组-处理字符串的有力工具</a></p>
+<p>另一篇帮助很大的文章：<a href="https://www.cnblogs.com/zwfymqz/p/8413523.html" target="_blank" rel="noopener">后缀数组详解-自为风月马前卒</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/后缀数组/" rel="tag"># 后缀数组</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/10/03/Code-1-Yazid的新生舞会/" rel="next" title="Code+ #1 Yazid的新生舞会">
+                <i class="fa fa-chevron-left"></i> Code+ #1 Yazid的新生舞会
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/10/07/XJOIContest1254/" rel="prev" title="XJOIContest1254">
+                XJOIContest1254 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Karnage">
+            
+              <p class="site-author-name" itemprop="name">Karnage</p>
+              <p class="site-description motion-element" itemprop="description">OIer && Kop</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一些定义"><span class="nav-number">1.</span> <span class="nav-text">一些定义</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#子串"><span class="nav-number">1.0.1.</span> <span class="nav-text">子串</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#后缀"><span class="nav-number">1.0.2.</span> <span class="nav-text">后缀</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#字符串大小"><span class="nav-number">1.0.3.</span> <span class="nav-text">字符串大小</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#后缀数组"><span class="nav-number">1.0.4.</span> <span class="nav-text">后缀数组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#名次数组"><span class="nav-number">1.0.5.</span> <span class="nav-text">名次数组</span></a></li></ol></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#SA-的倍增求法"><span class="nav-number">2.</span> <span class="nav-text">$SA$的倍增求法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#思想"><span class="nav-number">2.0.1.</span> <span class="nav-text">思想</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#详解"><span class="nav-number">2.0.2.</span> <span class="nav-text">详解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基数排序"><span class="nav-number">2.0.3.</span> <span class="nav-text">基数排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SA构建部分代码"><span class="nav-number">2.0.4.</span> <span class="nav-text">SA构建部分代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SA-的性质"><span class="nav-number">3.</span> <span class="nav-text">$SA$的性质</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#一些定义-1"><span class="nav-number">3.0.1.</span> <span class="nav-text">一些定义</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#height-数组求法"><span class="nav-number">3.0.2.</span> <span class="nav-text">$height$数组求法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#height构建部分代码"><span class="nav-number">3.0.3.</span> <span class="nav-text">height构建部分代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SA的应用"><span class="nav-number">4.</span> <span class="nav-text">SA的应用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文献"><span class="nav-number">4.0.1.</span> <span class="nav-text">参考文献</span></a></li></ol></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Karnage</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v6.7.0</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+      for (i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<style>
+.MathJax_Display {
+  overflow: auto hidden;
+}
+</style>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

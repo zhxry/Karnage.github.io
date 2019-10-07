@@ -105,7 +105,9 @@
 <meta property="og:description" content="后缀数组（SA）是处理字符串的有力工具。它较后缀自动机更易理解，较后缀树更容易实现，并且SA也完全不比它们中的任何一者逊色。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://s2.ax1x.com/2019/10/05/urTGuQ.md.jpg">
-<meta property="og:updated_time" content="2019-10-07T07:22:23.593Z">
+<meta property="og:image" content="https://s2.ax1x.com/2019/10/07/uRS3Z9.png">
+<meta property="og:image" content="https://s2.ax1x.com/2019/10/07/uR0HSJ.jpg">
+<meta property="og:updated_time" content="2019-10-07T12:47:03.199Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="学习笔记 后缀数组">
 <meta name="twitter:description" content="后缀数组（SA）是处理字符串的有力工具。它较后缀自动机更易理解，较后缀树更容易实现，并且SA也完全不比它们中的任何一者逊色。">
@@ -416,7 +418,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-07 15:22:23" itemprop="dateModified" datetime="2019-10-07T15:22:23+08:00">2019-10-07</time>
+                <time title="修改时间：2019-10-07 20:47:03" itemprop="dateModified" datetime="2019-10-07T20:47:03+08:00">2019-10-07</time>
               
             
           </span>
@@ -471,15 +473,21 @@
 <a id="more"></a>
 
 <p>本文将介绍后缀数组的$n \log n$倍增求法以及它的性质与简单应用。</p>
-<h2 id="一些定义"><a href="#一些定义" class="headerlink" title="一些定义"></a>一些定义</h2><h4 id="子串"><a href="#子串" class="headerlink" title="子串"></a>子串</h4><p>$s[l..r](l \le r)$表示字符串$S$的$l$到$r$，即$s[l], s[l + 1]…s[r - 1], s[r]$构成的字符串。</p>
+<blockquote>
+<h2 id="一些定义"><a href="#一些定义" class="headerlink" title="一些定义"></a>一些定义</h2></blockquote>
+<p>在详述算法之前，我们得先对一些定义有所了解。</p>
+<h4 id="子串"><a href="#子串" class="headerlink" title="子串"></a>子串</h4><p>$s[l..r](l \le r)$表示字符串$S$的$l$到$r$，即$s[l], s[l + 1]…s[r - 1], s[r]$构成的字符串。</p>
 <h4 id="后缀"><a href="#后缀" class="headerlink" title="后缀"></a>后缀</h4><p>$\text{Suffix} (i)$表示字符串$S$从第$i$个字符开始直到末尾的字符串，即$s[i, len]$这个子串。</p>
 <h4 id="字符串大小"><a href="#字符串大小" class="headerlink" title="字符串大小"></a>字符串大小</h4><p>即字符串的字典序大小。对于两个字符串$s$和$t$，从头开始依次比较每一个字符，若$s[i] = t[i]$则比较下一个字符，否则若$s[i] &lt; t[i]$则$s &lt; t$；若$s[i] &gt; t[i]$则$s &gt; t$。若其中一个字符串已经到尾了仍无结果，那么若$len(s) &lt; len(t)$则$s &lt; t$；若$len(s) &gt; len(t)$则$s &gt; t$；若$len(s) = len(t)$则$s = t$。</p>
 <h4 id="后缀数组"><a href="#后缀数组" class="headerlink" title="后缀数组"></a>后缀数组</h4><p>一维数组$SA$存储了$1 \sim n$的某个排列，保证$\forall i (1 \le i \lt n), \text{Suffix} (SA[i]) &lt; \text{Suffix} (SA[i + 1])$，即$S$的所有后缀从小到大排序后第$i$名起始位置。</p>
 <h4 id="名次数组"><a href="#名次数组" class="headerlink" title="名次数组"></a>名次数组</h4><p>一维数组$Rank$同样存储了$1 \sim n$的某个排列，它表示$\text{Suffix} (i)$的排名。$Rank$数组与$SA$数组是互逆的，即$Rank[SA[i]] = i,\ SA[Rank[i]] = i$。</p>
-<h2 id="SA-的倍增求法"><a href="#SA-的倍增求法" class="headerlink" title="$SA$的倍增求法"></a>$SA$的倍增求法</h2><h4 id="思想"><a href="#思想" class="headerlink" title="思想"></a>思想</h4><p>有一个<del>不是MLE就是TLE</del>的暴力算法，就是将所有后缀存下来，进行快排，复杂度$\mathcal {O} (n ^ 2 \log n)$</p>
+<blockquote>
+<h2 id="SA-的倍增求法"><a href="#SA-的倍增求法" class="headerlink" title="$SA$的倍增求法"></a>$SA$的倍增求法</h2></blockquote>
+<p>现在开始详细地讲述倍增算法。</p>
+<h4 id="思想"><a href="#思想" class="headerlink" title="思想"></a>思想</h4><p>暴力算法，是将所有后缀存下来，进行快排，复杂度$\mathcal {O} (n ^ 2 \log n)$</p>
 <p>这样当然不行，我们要进行优化</p>
 <p>倍增算法的核心思想是：假设我们已经求出所有后缀以前$2 ^ k$个字符排序后的结果，那么我们可以根据已求出的长为$2 ^ k$的后缀排名，求出长为$2 ^ {k + 1}$的后缀排名，在若干次这样的操作后将$SA$数组完整地求出。</p>
-<p>至于排序的过程，我们可以将长度为$2 ^ {k + 1}$的字符串拆分成一前一后两个长度均为$2 ^ k$的字符串，以前半部分为第一关键字，后半部分为第二关键字，进行基数排序。</p>
+<p>至于排序的过程，我们可以将长度为$2 ^ {k + 1}$的字符串拆分成一前一后两个长度均为$2 ^ k$的字符串，以前半部分为第一关键字，后半部分为第二关键字，进行基数排序，当然这里也可换用快排，这样总复杂度就会变成$\mathcal {O}(n \log ^ 2n)$</p>
 <p>下面的图片非常形象地展示了这一过程</p>
 <p><img src="https://s2.ax1x.com/2019/10/05/urTGuQ.md.jpg" alt="img"></p>
 <h4 id="详解"><a href="#详解" class="headerlink" title="详解"></a>详解</h4><p>先展示一部分代码</p>
@@ -494,13 +502,13 @@
 <p>每次循环开始时，我们要先求出$tp$数组，代表<strong>长度为$2len$的后缀中第二关键字排名为$i$的位置</strong>，在基数排序中有用到。注意，最后$len$个后缀此时已经不需拼接上后缀，因此它们的第二关键字大小为$0$，应排在最前面。而对于长度大于$len$的后缀，它们的第二关键字排名应由上一轮的$SA$数组得到，因此我们从小到大枚举，将$SA$数组中<strong>可作为第二关键字的值</strong>减去$len$（因为$SA$数组和$tp$数组存的都是位置，减去则是因为这是第二关键字）存入$tp$。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Radix_Sort(Size);</span><br></pre></td></tr></table></figure>
 
-<p>然后是基数排序，先放后面。</p>
+<p>然后是基数排序，后面再说。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::swap(Rank, tp);</span><br><span class="line">Rank[SA[<span class="number">1</span>]] = p = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n; ++i) Rank[SA[i]] = tp[SA[i]] == tp[SA[i - <span class="number">1</span>]] &amp;&amp; tp[SA[i] + len] == tp[SA[i - <span class="number">1</span>] + len] ? p : ++p;</span><br></pre></td></tr></table></figure>
 
 <p>排完序后我们要由新的$SA$数组得到$Rank$数组。因此我们再次从小到大枚举，并进行比较：如果某个后缀与其前一名后缀在上一轮和这一轮的排名都一样，那我们则记他们拥有一样的$Rank$值，并以此更新$p$值。</p>
 <h4 id="基数排序"><a href="#基数排序" class="headerlink" title="基数排序"></a>基数排序</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Radix_Sort</span><span class="params">(<span class="keyword">int</span> S)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= S; ++i) tax[i] = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) tax[Rank[i]]++;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= S; ++i) tax[i] += tax[i - <span class="number">1</span>];</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = n; i &gt;= <span class="number">1</span>; --i) SA[tax[Rank[tp[i]]]--] = tp[i];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>在前一轮我们已经对第二关键字进行了排序，并存到了$tp$数组中，现在我们只需考虑第一关键字（$Rank$）即可。回顾一下此时三个数组的意义</p>
+<p>比较绕。在前一轮我们已经对第二关键字进行了排序，并存到了$tp$数组中，现在我们只需以此为基础考虑第一关键字（$Rank$）即可。回顾一下此时三个数组的意义</p>
 <ul>
 <li>$SA[i]$：长度为$2len$时排名为$i$的后缀所在位置</li>
 <li>$Rank[i]$：长度为$len$时第$i$个后缀的排名，即长度为$2len$时第$i$个后缀第一关键字的排名</li>
@@ -512,7 +520,9 @@
 <h4 id="SA构建部分代码"><a href="#SA构建部分代码" class="headerlink" title="SA构建部分代码"></a>SA构建部分代码</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Radix_Sort</span><span class="params">(<span class="keyword">int</span> S)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= S; ++i) tax[i] = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) tax[Rank[i]]++;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= S; ++i) tax[i] += tax[i - <span class="number">1</span>];</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = n; i &gt;= <span class="number">1</span>; --i) SA[tax[Rank[tp[i]]]--] = tp[i];</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Build_SA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="keyword">int</span> Size = <span class="number">300</span>;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) Rank[i] = str[i] - <span class="string">'0'</span> + <span class="number">1</span>, tp[i] = i;</span><br><span class="line">	Radix_Sort(Size);</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">int</span> len = <span class="number">1</span>, p = <span class="number">0</span>; p &lt; n; Size = p, len &lt;&lt;= <span class="number">1</span>) &#123;</span><br><span class="line">        p = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = n - len + <span class="number">1</span>; i &lt;= n; ++i) tp[++p] = i;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) <span class="keyword">if</span> (SA[i] &gt; len) tp[++p] = SA[i] - len;</span><br><span class="line">        Radix_Sort(Size);</span><br><span class="line">        <span class="built_in">std</span>::swap(Rank, tp);</span><br><span class="line">        Rank[SA[<span class="number">1</span>]] = p = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">2</span>; i &lt;= n; ++i) Rank[SA[i]] = tp[SA[i]] == tp[SA[i - <span class="number">1</span>]] &amp;&amp; tp[SA[i] + len] == tp[SA[i - <span class="number">1</span>] + len] ? p : ++p;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>此外，必须一提的是，后缀数组的构建方法并不止倍增法这一种，SA-IS和DC3两种算法都能在$\mathcal {O} (n)$的复杂度内构建出后缀数组，但由于本人太菜不会，这里就不做更多介绍了。</p>
-<h2 id="SA-的性质"><a href="#SA-的性质" class="headerlink" title="$SA$的性质"></a>$SA$的性质</h2><p>说完了后缀数组的构建方法，我们得了解它的一些有用的性质。可以说前面的所有都在为这一部分铺垫而已，以下后缀数组的真正精髓。</p>
+<blockquote>
+<h2 id="SA-的性质"><a href="#SA-的性质" class="headerlink" title="$SA$的性质"></a>$SA$的性质</h2></blockquote>
+<p>说完了后缀数组的构建方法，我们得了解它的一些有用的性质。可以说前面的所有都在为这一部分铺垫而已，以下后缀数组的真正精髓。</p>
 <h4 id="一些定义-1"><a href="#一些定义-1" class="headerlink" title="一些定义"></a>一些定义</h4><p>$\text{lcp} (x, y)$：表示字符串$x$和字符串$y$的最长公共前缀</p>
 <p>$height$数组：定义$height[i] = len(\text{lcp} (\text{Suffix} (SA[i - 1]), \text{Suffix} (SA[i])))$，即排名相邻的后缀的最长公共前缀长度。特别地，$height[1] = 0$</p>
 <p>$H$数组：定义$H[i] = height[Rank[i]]$，即$i$号后缀与其前一名后缀的最长公共前缀长度</p>
@@ -524,10 +534,75 @@
 <p>根据$H[i] \le H[i - 1] - 1$可以发现$H$数组是<strong>近乎单调</strong>的，我们因此便可$\mathcal{O}(n)$求出$H$数组，进而求出$height$数组。</p>
 <h4 id="height构建部分代码"><a href="#height构建部分代码" class="headerlink" title="height构建部分代码"></a>height构建部分代码</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">Calc_Height</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> H = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= n; ++i) &#123;</span><br><span class="line">        <span class="keyword">if</span> (Rank[i] == <span class="number">1</span>) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="keyword">if</span> (H &gt; <span class="number">0</span>) --H;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = SA[Rank[i] - <span class="number">1</span>]; str[i + H] == str[j + H]; ++H);</span><br><span class="line">        height[Rank[i]] = H;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h2 id="SA的应用"><a href="#SA的应用" class="headerlink" title="SA的应用"></a>SA的应用</h2><p>待补</p>
+<blockquote>
+<h2 id="SA的应用"><a href="#SA的应用" class="headerlink" title="SA的应用"></a>SA的应用</h2></blockquote>
+<p>当然，只有应用的多样性才能说明$SA$的<strong>强大</strong></p>
+<ol start="0">
+<li><p>最长公共前缀</p>
+<blockquote>
+<p> 给定一个字符串，询问某两个后缀的最长公共前缀</p>
+</blockquote>
+<p>上文已有提及，为$\displaystyle \min _{i = Rank[x] + 1} ^ {Rank[y]} height[i]$，转化为区间最值问题，用$\text{RMQ}$可做到$\mathcal {O} (1)$。</p>
+</li>
+</ol>
+<ol>
+<li><p>可重叠最长重复字串</p>
+<blockquote>
+<p> 给定一个字符串，求出最长的重复出现的子串。可重叠</p>
+</blockquote>
+<p>因为可重叠，答案就是$height$数组中的最大值。</p>
+</li>
+</ol>
+<ol start="2">
+<li><p>不可重叠最长重复字串</p>
+<blockquote>
+<p>给定一个字符串，求出最长的重复出现的子串。不可重叠</p>
+</blockquote>
+<p>比前一个稍微麻烦些。二分答案，判断有没有重复出现的长度为$k$的子串。首先将排序后的后缀进行分组（如下图），每一组之间$height$值不小于$k$，那么对于同一组的后缀，如果出现的$SA$的最大值与最小值之差同样不小于$k$，则存在（$SA$的差可视为后缀间的距离，注意只需一组满足即可）。</p>
+</li>
+</ol>
+<p><img src="https://s2.ax1x.com/2019/10/07/uRS3Z9.png" alt="img"></p>
+<ol start="3">
+<li><p>可重叠的$k$次最长重复字串</p>
+<blockquote>
+<p>给定一个字符串，求至少出现$k$次的最长重复子串。可重叠</p>
+</blockquote>
+<p>同样二分答案并进行分组。如果某一组中有至少$k$（题目中的$k$）个后缀，则存在。</p>
+</li>
+<li><p>不相同子串的个数</p>
+<blockquote>
+<p>给定一个字符串，求不相同的子串的个数</p>
+</blockquote>
+<p>每个子串唯一对应某个后缀的前缀。考虑一个后缀$i$对答案的贡献。它在不计重复的情况下会产生$n - i + 1$个前缀，即子串。而其中重复的个数为$H[i] = height[Rank[i]]$，即与排在它前面的后缀的$\text{lcp}$长度。从而答案为$\displaystyle \sum _ {i = 1} ^ n n - i + 1 - height[Rank[i]]$</p>
+</li>
+<li><p>第$k$大子串</p>
+<blockquote>
+<p>给定一个字符串，求出其字典序第$k$大子串</p>
+</blockquote>
+<p>从小到大枚举$SA_i$，这个后缀会产生$n - SA_i + 1 - height[i]$个不同子串，若大于$k$则输出，否则将$k$减去即可。</p>
+</li>
+<li><p>最长回文子串</p>
+<blockquote>
+<p>给定一个字符串，求其最长回文子串</p>
+</blockquote>
+<p>我们将字符串倒过来接在原串后面（中间隔上特殊字符），然后枚举每一位，对原串和反串的相应后缀求$\text{lcp}$，取最大值即可。具体可参考下图。</p>
+</li>
+</ol>
+<p><img src="https://s2.ax1x.com/2019/10/07/uR0HSJ.jpg" alt="uR0HSJ.jpg"></p>
+<ol start="7">
+<li><p>最长公共子串</p>
+<blockquote>
+<p> 给定两个字符串$A$和$B$，求它们的最长公共子串</p>
+</blockquote>
+<p>做法同回文串有异曲同工之妙。将$B$串接在$A$串后面，以特殊字符相隔，枚举每一名后缀，如果它的前一名和它来自不同的字符串，那么就以$height$值更新答案。</p>
+</li>
+</ol>
+<p>常用的就这些了。。。吧？当然这只是后缀数组的应用中最基础的一部分，这里只做简短的介绍。总而言之，后缀数组是非常棒的字符串结构，在处理一类字符串问题时都有非常好的效果。值得掌握。</p>
 <hr>
-<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><p>IOI2009国家集训队论文：<a href="https://wenku.baidu.com/view/ed1be61e10a6f524ccbf85fd.html" target="_blank" rel="noopener">后缀数组-处理字符串的有力工具</a></p>
+<h4 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h4><blockquote>
+<p>IOI2009国家集训队论文：<a href="https://wenku.baidu.com/view/ed1be61e10a6f524ccbf85fd.html" target="_blank" rel="noopener">后缀数组-处理字符串的有力工具</a></p>
 <p>另一篇帮助很大的文章：<a href="https://www.cnblogs.com/zwfymqz/p/8413523.html" target="_blank" rel="noopener">后缀数组详解-自为风月马前卒</a></p>
+</blockquote>
 
       
     </div>

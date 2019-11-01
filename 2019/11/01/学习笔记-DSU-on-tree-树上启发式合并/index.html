@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Karnage的博客">
 <meta property="og:description" content="树上启发式合并（DSU on Tree）用于解决一类离线的、询问子树信息的问题，它拥有 $\mathcal{O} (n \log n)$ 的优秀时间复杂度，并且常数小，实现难度低。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-01T13:16:10.761Z">
+<meta property="og:updated_time" content="2019-11-01T13:22:36.096Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="学习笔记 DSU on tree(树上启发式合并)">
 <meta name="twitter:description" content="树上启发式合并（DSU on Tree）用于解决一类离线的、询问子树信息的问题，它拥有 $\mathcal{O} (n \log n)$ 的优秀时间复杂度，并且常数小，实现难度低。">
@@ -426,7 +426,7 @@
                 
               
 
-              <time title="创建时间：2019-11-01 20:02:01 / 修改时间：21:16:10" itemprop="dateCreated datePublished" datetime="2019-11-01T20:02:01+08:00">2019-11-01</time>
+              <time title="创建时间：2019-11-01 20:02:01 / 修改时间：21:22:36" itemprop="dateCreated datePublished" datetime="2019-11-01T20:02:01+08:00">2019-11-01</time>
             
 
             
@@ -512,7 +512,7 @@
 
 <blockquote>
 <h2 id="CF741D-Arpa’s-letter-marked-tree-and-Mehrdad’s-Dokhtar-kosh-paths"><a href="#CF741D-Arpa’s-letter-marked-tree-and-Mehrdad’s-Dokhtar-kosh-paths" class="headerlink" title="CF741D Arpa’s letter-marked tree and Mehrdad’s Dokhtar-kosh paths"></a>CF741D Arpa’s letter-marked tree and Mehrdad’s Dokhtar-kosh paths</h2></blockquote>
-<h3 id="Description-2"><a href="#Description-2" class="headerlink" title="Description"></a>Description</h3><p>一棵根为1 的树，每条边上有一个字符（a-v共22种）。 一条简单路径被称为 $\text{s} \color{red} \text{yk}$ 的当且仅当路径上的字符经过重排后可以变成一个回文串。 求每个子树中最长的 $\text{s} \color{red} \text{yk}$ 路径的长度。</p>
+<h3 id="Description-2"><a href="#Description-2" class="headerlink" title="Description"></a>Description</h3><p>一棵根为1 的树，每条边上有一个字符（a-v共22种）。 一条简单路径被称为 syk 的当且仅当路径上的字符经过重排后可以变成一个回文串。 求每个子树中最长的 syk 路径的长度。</p>
 <h3 id="Solution-2"><a href="#Solution-2" class="headerlink" title="Solution"></a>Solution</h3><p>不难发现，一个字符串能在重排后变成回文串，当且仅当其中出现奇数次的字符个数不大于 $1$，若我们用二进制整数表示字符集中每个字符出现次数的奇偶性（奇数为 $1$，偶数为 $0$），那么一个状态是合法的吗，当且仅当其为 $0$ 或 $2$ 的自然数次幂。</p>
 <p>考虑 $\mathcal{O} (n ^ 2)$ 暴力：对于每个点 $u$。我们钦定路径一定经过 $u$，那么枚举子节点，对于 $22$ 种可能状态，用合法的路径的最大长度更新 $u$ 的答案。</p>
 <p>上述做法使用 DSU on tree 可优化到 $\mathcal{O}(22 \times n \log n)$。</p>

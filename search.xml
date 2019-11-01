@@ -26,7 +26,7 @@
 
 <blockquote>
 <h2 id="CF741D-Arpa’s-letter-marked-tree-and-Mehrdad’s-Dokhtar-kosh-paths"><a href="#CF741D-Arpa’s-letter-marked-tree-and-Mehrdad’s-Dokhtar-kosh-paths" class="headerlink" title="CF741D Arpa’s letter-marked tree and Mehrdad’s Dokhtar-kosh paths"></a>CF741D Arpa’s letter-marked tree and Mehrdad’s Dokhtar-kosh paths</h2></blockquote>
-<h3 id="Description-2"><a href="#Description-2" class="headerlink" title="Description"></a>Description</h3><p>一棵根为1 的树，每条边上有一个字符（a-v共22种）。 一条简单路径被称为 $\text{s} \color{red} \text{yk}$ 的当且仅当路径上的字符经过重排后可以变成一个回文串。 求每个子树中最长的 $\text{s} \color{red} \text{yk}$ 路径的长度。</p>
+<h3 id="Description-2"><a href="#Description-2" class="headerlink" title="Description"></a>Description</h3><p>一棵根为1 的树，每条边上有一个字符（a-v共22种）。 一条简单路径被称为 syk 的当且仅当路径上的字符经过重排后可以变成一个回文串。 求每个子树中最长的 syk 路径的长度。</p>
 <h3 id="Solution-2"><a href="#Solution-2" class="headerlink" title="Solution"></a>Solution</h3><p>不难发现，一个字符串能在重排后变成回文串，当且仅当其中出现奇数次的字符个数不大于 $1$，若我们用二进制整数表示字符集中每个字符出现次数的奇偶性（奇数为 $1$，偶数为 $0$），那么一个状态是合法的吗，当且仅当其为 $0$ 或 $2$ 的自然数次幂。</p>
 <p>考虑 $\mathcal{O} (n ^ 2)$ 暴力：对于每个点 $u$。我们钦定路径一定经过 $u$，那么枚举子节点，对于 $22$ 种可能状态，用合法的路径的最大长度更新 $u$ 的答案。</p>
 <p>上述做法使用 DSU on tree 可优化到 $\mathcal{O}(22 \times n \log n)$。</p>
